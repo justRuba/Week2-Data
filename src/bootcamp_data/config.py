@@ -20,4 +20,3 @@ def make_paths(root: Path) -> Paths:
     )
 
 
-print(json.dumps())
