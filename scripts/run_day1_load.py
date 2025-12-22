@@ -6,6 +6,9 @@ from bootcamp_data.config import make_paths
 from bootcamp_data.io import read_orders_csv, read_users_csv, write_parquet
 from bootcamp_data.transforms import enforce_schema
 from bootcamp_data.config import make_paths
+from bootcamp_data.transforms import enforce_schema, normalize_text, apply_mapping, dedupe_keep_latest
+from bootcamp_data.quality  import require_columns, assert_non_empty, assert_unique_key, assert_in_range, missingness_report
+
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,10 +21,34 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(messag
 
 def main() -> None:
     p = make_paths(ROOT)
-    orders = enforce_schema(read_orders_csv(p.raw / "orders.csv"))
+
+    orders = read_orders_csv(p.raw / "orders.csv")
     users = read_users_csv(p.raw / "users.csv")
-    log.info("Loaded rows: orders=%s users=%s", len(orders), len(users))
-    log.info("Orders dtypes:\n%s", orders.dtypes)
+
+    require_columns(
+        orders,
+        ["order_id", "user_id", "amount", "quantity", "created_at", "status"]
+    )
+    assert_non_empty(orders, "orders")
+    assert_non_empty(users, "users")
+    assert_unique_key(users, "user_id")
+
+    orders = enforce_schema(orders)
+
+    assert_in_range(orders["amount"], lo=0, name="amount")
+    assert_in_range(orders["quantity"], lo=1, name="quantity")
+
+    orders["status"] = normalize_text(orders["status"])
+    orders["status"] = apply_mapping(
+        orders["status"],
+        {"paid": "paid", "refund": "refund", "refunded": "refund"}
+    )
+
+    orders = dedupe_keep_latest(orders, ["order_id"], "created_at")
+    assert_unique_key(orders, "order_id")
+
+    missing_report = missingness_report(orders)
+    missing_report.to_parquet(p.processed / "orders_missingness.parquet")
 
     out_orders = p.processed / "orders.parquet"
     out_users = p.processed / "users.parquet"
@@ -36,8 +63,4 @@ def main() -> None:
     meta_path = p.processed / "_run_meta.json"
     meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
-    log.info("Wrote processed data to: %s", p.processed)
-    log.info("Run metadata saved at: %s", meta_path)
-
-if __name__ == "__main__":
-    main()
+    log.info("Pipeline completed successfully")
