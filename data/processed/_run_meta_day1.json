@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2025-12-22T16:56:07.583867+00:00",
+  "timestamp_utc": "2025-12-22T16:51:25.912308+00:00",
   "rows": {
     "orders": 5,
     "users": 4
   },
   "outputs": {
-    "orders": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\orders_clean.parquet",
+    "orders": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\orders.parquet",
     "users": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\users.parquet"
   }
 }
