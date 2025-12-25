@@ -1,77 +1,57 @@
-# ETL Pipeline & EDA
+# ETL Project — Orders & Users Analytics
 
-This project implements a complete ETL (Extract, Transform, Load) pipeline using Python and pandas.
-Raw orders and users data are cleaned, validated, transformed, and joined into a final analytics table.
+## Project Overview
+This project demonstrates a full ETL (Extract, Transform, Load) workflow for e-commerce order and user data. The goal is to clean, enrich, and aggregate raw CSV data into a structured analytics table suitable for analysis.
 
+## Raw Data
+Two CSV files are used as input:
+- `orders.csv` — contains individual order records (order ID, user ID, amount, quantity, status, timestamps, etc.)
+- `users.csv` — contains user information (user ID, country, signup date)
 
-## ETL Overview
+## ETL Pipeline
+The pipeline is implemented in three main stages:
 
-### Extract
-- Read raw CSV files from `data/raw/`
+### 1. Load & Convert (`run_day1_load.py`)
+- Reads raw CSVs from the `data/raw/` directory.
+- Converts data to Parquet format for faster processing.
+- Ensures basic schema enforcement on the orders dataset.
+- Saves intermediate outputs:
+  - `orders.parquet`
+  - `users.parquet`
+- Writes a `_run_meta_day1.json` metadata file containing row counts and timestamps.
 
-### Transform
-- Validate required columns
-- Enforce schema and data types
-- Normalize categorical values
-- Parse datetime columns
-- Add time-based features
-- Add missing-value flags
-- Validate user uniqueness
-- Safely join orders with users
-- Winsorize amount outliers and flag them
+### 2. Data Cleaning (`run_day2_clean.py`)
+- Performs validations and quality checks:
+  - Required columns are present.
+  - No empty datasets.
+  - Unique keys for users and orders.
+  - Values within expected ranges (e.g., amount ≥ 0, quantity ≥ 1).
+- Cleans and normalizes categorical fields (`status` column mapped to standard categories: `paid` and `refund`).
+- Deduplicates orders, keeping the latest record per `order_id`.
+- Generates a missingness report for further inspection.
+- Saves cleaned outputs:
+  - `orders_clean.parquet`
+  - `users.parquet`
+- Updates `_run_meta.json` with processed row counts.
 
-### Load
-- Write processed datasets as Parquet files
-- Generate run metadata JSON
+### 3. Analytics Table (`run_day3_build_analytics.py`)
+- Parses timestamps and adds derived time features (year, month, day of week, hour).
+- Joins orders with user information to enrich analytics data.
+- Computes winsorized amounts to reduce outlier effects.
+- Flags extreme values for further analysis.
+- Produces the final analytics table:
+  - `analytics_table.parquet`
 
----
+## Output Files
+All processed data and metadata are stored in the `data/processed/` directory:
+- `orders_clean.parquet`
+- `users.parquet`
+- `analytics_table.parquet`
+- `_run_meta.json` — contains pipeline timestamps, row counts, and join metrics.
 
-## Setup
-
-Create virtual environment:
-python -m venv .venv
-
-Activate (Windows):
-.venv\Scripts\Activate.ps1
-
-Install dependencies:
-pip install -r requirements.txt
-pip install -e .
-
----
-
-## Run ETL
-
-From project root:
-python scripts/run_etl.py
-
-If no error appears, the ETL ran successfully.
-
----
-
-## Outputs
-
-Generated files:
-- data/processed/orders_clean.parquet
-- data/processed/users.parquet
-- data/processed/analytics_table.parquet
-- data/processed/_run_meta.json
-
----
-
-## EDA
-
-Open:
-notebooks/eda.ipynb
-
-Figures are saved to:
-reports/figures/
-
----
-
-## Notes
-
-- Timezone warnings during monthly aggregation are expected.
-- Pipeline is deterministic and idempotent.
-- All transformations are pure and testable functions.
-
+## How to Run
+1. Ensure your Python environment is set up:
+   ```bash
+   python -m venv .venv
+   # activate the environment
+   pip install -r requirements.txt
