@@ -1,11 +1,15 @@
 {
-  "timestamp_utc": "2025-12-23T17:01:07.904292+00:00",
-  "rows": {
-    "orders": 5,
-    "users": 4
-  },
-  "outputs": {
-    "orders": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\orders_clean.parquet",
-    "users": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\users.parquet"
+  "rows_in_orders_raw": 5,
+  "rows_in_users": 4,
+  "rows_in_analytics": 5,
+  "missing_created_at": 1,
+  "country_match_rate": 1.0,
+  "paths": {
+    "raw_orders": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\raw\\orders.csv",
+    "raw_users": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\raw\\users.csv",
+    "orders_clean": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\orders_clean.parquet",
+    "users": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\users.parquet",
+    "analytics": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\analytics_table.parquet",
+    "run_meta": "C:\\Users\\Rubah\\OneDrive\\\u0633\u0637\u062d \u0627\u0644\u0645\u0643\u062a\u0628\\week 2\\data\\processed\\_run_meta.json"
   }
 }

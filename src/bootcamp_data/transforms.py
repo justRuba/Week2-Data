@@ -63,3 +63,7 @@ def add_outlier_flag(df: pd.DataFrame, col: str, *, k: float = 1.5) -> pd.DataFr
     lo, hi = iqr_bounds(df[col], k=k)
     return df.assign(**{f"{col}__is_outlier": (df[col] < lo) | (df[col] > hi)})
 
+def add_missing_flags(df, cols):
+    for col in cols:
+        df[f"{col}_missing"] = df[col].isna()
+    return df
